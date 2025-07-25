@@ -1,0 +1,180 @@
+import "./PlayfairDisplay-BoldItalic.ttf";
+import {TextEdit, CheckBox, Button, ListView} from "std-widgets.slint";
+import {StyledText} from "styledText.slint";
+import {styledInput} from "styledInputs.slint";
+import {resText} from "resText.slint";
+
+export component MainWindow inherits Window {
+    default-font-family: "Playfair Display";
+    default-font-size: 25px;
+
+    property <string> todo_input: "";
+    property <string> todo_description: "";
+    property <bool> todo_ischecked: false;
+
+    in-out property <string> backEnd_res: "";
+    in-out property <[{todo_input: string, todo_description: string, todo_ischecked: bool}]> todos: [];
+
+    callback send_data(string, string, bool);
+    callback delete_item(string, string, bool);
+
+    HorizontalLayout {
+        Rectangle {
+            width: 75%;
+            background: #000749;
+            VerticalLayout {
+                alignment: start;
+                spacing: 20px;
+
+                StyledText { text: "Todo:"; }
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 30px;
+                    styledInput {
+                        placeholder-text: "write your todo ...";
+                        text <=> todo_input;
+                    }
+                }
+
+                StyledText { text: "Description:" ;}
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 30px;
+                    styledInput {
+                        placeholder-text: "demystify your todo ...";
+                        text <=> todo_description;
+                    }
+                }
+
+                StyledText { text: "isDone:" ;}
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 35px;
+                    Rectangle {
+                        property <bool> is_checked: false;
+                        width: is_checked ? 200px : 35px;
+                        height: is_checked ? 42.5px : 35px;
+                        background: is_checked ? #00eb91 : #ff5778;
+                        border-radius: is_checked ? 20px : 10px;
+
+                        animate width { duration: 500ms; easing: ease-in-out; }
+                        animate height { duration: 500ms; easing: ease-in-out; }
+                        animate background { duration: 500ms; easing: ease-in-out; }
+                        animate border-radius { duration: 500ms; easing: ease-in-out; }
+
+                        TouchArea {
+                            mouse-cursor: pointer;
+                            clicked => {
+                                is_checked = !is_checked;
+                                todo_ischecked = is_checked;
+                            }
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 50px;
+                    Rectangle {
+                        property <bool> is_clicked: false;
+                        width: is_clicked ? 350px : 200px;
+                        height: is_clicked ? 45px : 35px;
+                        background: is_clicked ? #efffd2 : #e7ff7a;
+                        border-radius: is_clicked ? 20px : 10px;
+
+                        Text {
+                            text: "submit";
+                            font-weight: 400;
+                            color: black;
+                        }
+
+                        animate width { duration: 500ms; easing: ease-in; }
+                        animate height { duration: 500ms; easing: ease-in; }
+                        animate background { duration: 500ms; easing: ease-in; }
+                        animate border-radius { duration: 500ms; easing: ease-in; }
+
+                        TouchArea {
+                            clicked => {
+                                is_clicked = !is_clicked;
+                                root.send_data(todo_input, todo_description, todo_ischecked);
+                            }
+                        }
+                    }
+                }
+
+                Text {
+                    text: backEnd_res;
+                    color: #ffffff;
+                    font-size: 16px;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+
+        Rectangle {
+            width: 25%;
+            background: #1a1a3d;
+
+            VerticalLayout {
+                spacing: 15px;
+
+                Text {
+                    text: "Your Todos";
+                    color: #9aff86;
+                    font-size: 28px;
+                    horizontal-alignment: center;
+                    font-weight: 850;
+                }
+
+                ListView {
+                    for todo[i] in todos: Rectangle {
+                        width: parent.width;
+                        height: 220px;
+
+                        HorizontalLayout {
+                            VerticalLayout {
+                                alignment: center;
+                                padding: 10px;
+
+                                resText { text: "Todo:" ;}
+                                Text {
+                                    text: todo.todo_description;
+                                    font-size: 19px;
+                                }
+
+                                resText { text: "Description:" ;}
+                                Text {
+                                    text: todo.todo_input;
+                                    font-size: 19px;
+                                }
+
+                                resText { text: "isDone:" ;}
+                                Rectangle {
+                                    width: 40px;
+                                    height: 20px;
+                                    background: todo.todo_ischecked ? #00eb91 : #ff5778;
+                                    border-radius: 10px;
+                                }
+
+                                Image {
+                                    source: @image-url("src/assets/filled-trash.png");
+                                    width: 24px;
+                                    height: 24px;
+                                    horizontal-alignment: left;
+
+                                    TouchArea {
+                                        mouse-cursor: pointer;
+                                        clicked => {
+                                            root.delete_item(todo.todo_input, todo.todo_description, todo.todo_ischecked);
+                                        }
+                                    }
+                                }
+                            }
+                            spacing: 10px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
