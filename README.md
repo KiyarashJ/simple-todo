@@ -51,8 +51,8 @@ cargo run
 ```
 ### The backend will run on http://localhost:3000, and the Slint UI will launch automatically.
 
-# UsageAdd
-### a Todo:Enter a title, description, and check the completion status in the UI🪼.
+# Usage:
+### Add a Todo:Enter a title, description, and check the completion status in the UI🪼.
 ### Click the "Add" button to send the task to the backend✨.
 
 ### View Todos:All tasks are displayed in a list, fetched from the backend on startup🎉.
